@@ -1,0 +1,20 @@
+# --- ROS 2 Build Artifacts ---
+build/
+install/
+log/
+
+# --- Python Junk ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# --- IDE Specific (VS Code) ---
+.vscode/
+.history/
+
+# --- System Files ---
+.DS_Store
+*.swp
+*~
