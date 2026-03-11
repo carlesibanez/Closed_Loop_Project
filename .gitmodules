@@ -1,0 +1,9 @@
+[submodule "Universal_Robots_ROS2_GZ_Simulation"]
+	path = Universal_Robots_ROS2_GZ_Simulation
+	url = https://github.com/UniversalRobots/Universal_Robots_ROS2_GZ_Simulation.git
+[submodule "Universal_Robots_ROS2_Driver"]
+	path = Universal_Robots_ROS2_Driver
+	url = https://github.com/UniversalRobots/Universal_Robots_ROS2_Driver.git
+[submodule "robotiq_hande_ros2"]
+	path = robotiq_hande_ros2
+	url = https://github.com/carlesibanez/robotiq_hande_ros2.git

@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="test_gripper">
+
+  <xacro:arg name="ros_namespace" default="" />
+
+   <link name="world"/>
+
+   <!-- <joint name="world_joint" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 1.0" rpy="0 0 0"/>
+   </joint> -->
+
+  <!-- table -->
+   <!-- <link name="lab_table">
+     <visual>
+       <origin xyz="0 0 0.375" rpy="0 0 0"/>
+       <geometry><box size="1.0 1.0 0.75"/></geometry>
+       <material name="gray">
+         <color rgba="0.5 0.5 0.5 1.0"/>
+       </material>
+     </visual>
+     <collision>
+       <origin xyz="0 0 0.375" rpy="0 0 0"/>
+       <geometry><box size="1.0 1.0 0.75"/></geometry>
+     </collision>
+     <inertial>
+       <mass value="50.0"/>
+       <origin xyz="0 0 0.375" rpy="0 0 0"/>
+       <inertia ixx="4.0" ixy="0" ixz="0" iyy="4.0" iyz="0" izz="4.0"/>
+     </inertial>
+   </link>
+
+   <joint name="world_to_table" type="fixed">
+     <parent link="world"/>
+     <child link="lab_table"/>
+     <origin xyz="0 0 0" rpy="0 0 0"/>
+   </joint> -->
+
+  <!-- camera mount -->
+  <link name="camera_mount">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://closed_loop_dalsa_description/meshes/camera_mount_95.stl"/>
+      </geometry>
+      <material name="black"><color rgba="0.1 0.1 0.1 1.0"/></material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://closed_loop_dalsa_description/meshes/camera_mount_95.stl"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="camera_mount_joint" type="fixed">
+     <parent link="world"/>
+     <child link="camera_mount"/>
+     <origin xyz="0 0 0.5" rpy="0 ${-pi/2} 0"/>
+   </joint>
+
+
+  <!-- Camera -->
+  <link name="camera_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://closed_loop_dalsa_description/meshes/realsense_D405.stl"/>
+      </geometry>
+      <material name="black"><color rgba="0.1 0.1 0.1 1.0"/></material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://closed_loop_dalsa_description/meshes/realsense_D405.stl"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <joint name="camera_joint" type="fixed">
+    <parent link="camera_mount"/>
+    <child link="camera_link"/>
+    <origin xyz="0.01 0 0.023" rpy="0 ${95*pi/180} 0"/>
+  </joint>
+
+  <link name="camera_link_optical"/>
+
+  <joint name="camera_optical_joint" type="fixed">
+    <parent link="camera_link"/>
+    <child link="camera_link_optical"/>
+    <origin xyz="0 0 0" rpy=" 0 ${-pi/2} 0"/>
+  </joint>
+
+  <gazebo reference="camera_link_optical">
+    <sensor name="wrist_camera" type="rgbd_camera">
+        <camera>
+          <horizontal_fov>1.047</horizontal_fov>
+          <image>
+            <width>320</width>
+            <height>240</height>
+          </image>
+          <clip><near>0.1</near><far>10</far></clip>
+          <optical_frame_id>camera_link_optical</optical_frame_id>
+        </camera>
+        <always_on>1</always_on>
+        <update_rate>10</update_rate>
+        <visualize>true</visualize>
+        <topic>wrist_camera</topic>
+    </sensor>
+  </gazebo>
+
+</robot>
