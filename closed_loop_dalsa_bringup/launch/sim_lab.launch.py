@@ -33,6 +33,12 @@ def generate_launch_description():
         'bio_lab_moveit.launch.py' 
     )
 
+    custom_controllers_path = os.path.join(
+        get_package_share_directory('closed_loop_dalsa_description'), 
+        'config', 
+        'custom_ur_controllers.yaml'
+    )
+
     # 3. Include the UR Simulation 
     # This launch file handles MoveGroup, Gazebo, and RViz
     ur_simulation = IncludeLaunchDescription(
@@ -44,7 +50,8 @@ def generate_launch_description():
             'description_file': urdf_path, 
             'world_file': world_file_path,
             'moveit_launch_file': my_moveit_launch,
-            'launch_rviz': 'true'
+            'launch_rviz': 'true',
+            'controllers_file': custom_controllers_path
         }.items()
     )
 
@@ -70,30 +77,33 @@ def generate_launch_description():
             '/wrist_camera/image@sensor_msgs/msg/Image[gz.msgs.Image',
             '/wrist_camera/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked',
             '/wrist_camera/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo',
-            # '/gripper/attach@std_msgs/msg/Empty]gz.msgs.Empty',
-            # '/gripper/detach@std_msgs/msg/Empty]gz.msgs.Empty',
+            '/attach_plate@std_msgs/msg/Empty]gz.msgs.Empty',
+            '/detach_plate@std_msgs/msg/Empty]gz.msgs.Empty'
         ],
         output='screen'
     )
 
 
     # Use the description package to find the plate model
-    # plate_urdf_path = os.path.join(pkg_description, 'models', 'plate.urdf')
-    # spawn_plate = Node(
-    #     package='ros_gz_sim',
-    #     executable='create',
-    #     arguments=[
-    #         '-file', plate_urdf_path,
-    #         '-name', 'greiner_plate',
-    #         '-x', '0.4', '-y', '0.0', '-z', '0.76', # Adjusted for your 0.75m table
-    #     ],
-    #     output='screen',
-    # )
+
+    microplate_urdf_path = os.path.join(pkg_description, 'urdf', 'microplate.urdf')
+    spawn_microplate = Node(
+        package='ros_gz_sim',
+        executable='create',
+        arguments=[
+            '-name', 'sbs_microplate',
+            '-file', microplate_urdf_path,
+            '-x', '0.35',  # X position in front of the robot
+            '-y', '0.0',   # Centered
+            '-z', '0.76',  # Slightly above the table to let physics drop it
+        ],
+        output='screen',
+    )
 
     return LaunchDescription([
         joint_state_broadcaster_spawner,
         ur_simulation,
         gripper_spawner,
         camera_bridge,
-        # spawn_plate
+        spawn_microplate,
     ])

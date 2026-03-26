@@ -6,6 +6,10 @@
 
     <xacro:ur_srdf/>
 
+    <group name="ur_manipulator_tcp">
+        <chain base_link="base_link" tip_link="tcp_link" />
+    </group>
+
     <group name="gripper">
         <link name="gripper_adapter" />
         <link name="gripper_body" />
@@ -14,7 +18,7 @@
         <joint name="finger_joint" />
     </group>
 
-    <end_effector name="hand_e" parent_link="tcp_link" group="gripper" parent_group="ur_manipulator" />
+    <end_effector name="hand_e" parent_link="tool0" group="gripper" parent_group="ur_manipulator" />
 
     <group_state name="closed" group="gripper">
         <joint name="finger_joint" value="0.025"/>

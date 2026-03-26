@@ -47,10 +47,10 @@ def generate_launch_description():
         .robot_description_semantic(Path("config") / "bio_lab.srdf.xacro", {"name": ur_type})
         # Load kinematics for BOTH the arm and the gripper
         .robot_description_kinematics(file_path=os.path.join(
-            get_package_share_directory("ur_moveit_config"), "config", "kinematics.yaml"))
+            get_package_share_directory("closed_loop_dalsa_description"), "config", "kinematics.yaml"))
         .joint_limits(file_path=os.path.join(
             get_package_share_directory("closed_loop_dalsa_description"), "config", "joint_limits.yaml"))
-        .planning_pipelines(pipelines=["ompl"])
+        .planning_pipelines(pipelines=["ompl"], default_planning_pipeline="ompl")
         .to_moveit_configs()
     )
 

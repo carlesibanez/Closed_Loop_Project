@@ -58,8 +58,18 @@
 
   <gazebo>
     <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-      <parameters>$(find ur_simulation_gz)/config/ur_controllers.yaml</parameters>
+      <parameters>$(find closed_loop_dalsa_description)/config/custom_ur_controllers.yaml</parameters>
       <parameters>$(find robotiq_hande_moveit_config)/config/ros2_controllers.yaml</parameters>
+    </plugin>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="gz-sim-detachable-joint-system" name="gz::sim::systems::DetachableJoint">
+      <parent_link>finger1</parent_link>
+      <child_model>sbs_microplate</child_model>
+      <child_link>base_link</child_link>
+      <attach_topic>/attach_plate</attach_topic>
+      <detach_topic>/detach_plate</detach_topic>
     </plugin>
   </gazebo>
 
