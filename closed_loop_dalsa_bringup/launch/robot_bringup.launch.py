@@ -1,0 +1,79 @@
+import os
+from launch import LaunchDescription
+from launch_ros.actions import Node
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration
+from ament_index_python.packages import get_package_share_directory
+
+
+def generate_launch_description():
+    # 1. Get paths using share directory (symlinked to your src)
+    pkg_description = get_package_share_directory('closed_loop_dalsa_description')
+    pkg_bringup = get_package_share_directory('closed_loop_dalsa_bringup')
+    # pkg_robotiq = get_package_share_directory('robotiq_hande_description')
+    
+    # Robot XACRO and world paths
+    urdf_path = os.path.join(pkg_description, 'urdf', 'lab_setup2.urdf.xacro')
+
+    world_file_path = os.path.join(pkg_description, 'world', 'bio_lab.world')
+
+    # 2. Gazebo Resource Path (Vital for finding your .stl meshes)
+    # We point Gazebo to the 'share' directory so it can resolve package:// paths
+    model_path = os.path.dirname(pkg_description)
+    # robotiq_path = os.path.dirname(pkg_robotiq)
+
+    resource_paths = [model_path] #, robotiq_path]
+    if 'GZ_SIM_RESOURCE_PATH' in os.environ:
+        os.environ['GZ_SIM_RESOURCE_PATH'] += ":" + ":".join(resource_paths)
+    else:
+        os.environ['GZ_SIM_RESOURCE_PATH'] = ":".join(resource_paths)
+
+    moveit_launch_file = os.path.join(
+        get_package_share_directory('closed_loop_dalsa_bringup'), 
+        'launch', 
+        'moveit_controllers.launch.py' 
+    )
+
+    custom_controllers_path = os.path.join(
+        get_package_share_directory('closed_loop_dalsa_description'), 
+        'config', 
+        'ros2_controllers.yaml'
+    )
+
+    # 3. Include the UR Simulation 
+    # This launch file handles Gazebo, ros2_control, MoveGroup, and robot_state_publisher
+    # DO NOT spawn additional ros2_control_node or joint_state_broadcaster here as ur_sim_control already does
+    ur_simulation = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('ur_simulation_gz'), 'launch', 'ur_sim_moveit.launch.py')
+        ),
+        launch_arguments={
+            'ur_type': 'ur5e',
+            'description_file': urdf_path, 
+            'world_file': world_file_path,
+            'moveit_launch_file': moveit_launch_file,
+            'launch_rviz': 'false',
+            'controllers_file': custom_controllers_path,
+            'activate_joint_controller': 'true',  # Explicitly activate the joint controller
+            'initial_joint_controller': 'joint_trajectory_controller',  # Specify which controller to start
+        }.items()
+    )
+
+    camera_bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=[
+            '/wrist_camera/image@sensor_msgs/msg/Image[gz.msgs.Image',
+            '/wrist_camera/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked',
+            '/wrist_camera/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo',
+            '/attach_plate@std_msgs/msg/Empty]gz.msgs.Empty',
+            '/detach_plate@std_msgs/msg/Empty]gz.msgs.Empty'
+        ],
+        output='screen'
+    )
+
+    return LaunchDescription([
+        ur_simulation,
+        camera_bridge,
+    ])

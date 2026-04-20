@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro" name="bio_lab">
-    
 
     <xacro:include filename="$(find ur_moveit_config)/srdf/ur_macro.srdf.xacro"/>
 
     <xacro:ur_srdf/>
+
+    <!-- Explicit group definition for planning (in case macro doesn't expand properly) -->
+    <group name="ur_manipulator">
+        <chain base_link="base_link" tip_link="tool0" />
+    </group>
 
     <group name="ur_manipulator_tcp">
         <chain base_link="base_link" tip_link="tcp_link" />
@@ -18,7 +22,7 @@
         <joint name="finger_joint" />
     </group>
 
-    <end_effector name="hand_e" parent_link="tool0" group="gripper" parent_group="ur_manipulator_tcp" />
+    <end_effector name="hand_e" parent_link="tcp_link" group="gripper" parent_group="ur_manipulator_tcp" />
 
     <group_state name="closed" group="gripper">
         <joint name="finger_joint" value="0.025"/>
@@ -40,8 +44,20 @@
       <joint name="wrist_1_joint" value="0" />
       <joint name="wrist_2_joint" value="0" />
       <joint name="wrist_3_joint" value="0" />
-      <joint name="finger_joint" value="0"/>
     </group_state>
+
+    <group_state name="front" group="ur_manipulator_tcp">
+      <joint name="elbow_joint" value="0" />
+      <joint name="shoulder_lift_joint" value="-1.5707" />
+      <joint name="shoulder_pan_joint" value="-1.5707" />
+      <joint name="wrist_1_joint" value="-1.5707" />
+      <joint name="wrist_2_joint" value="0" />
+      <joint name="wrist_3_joint" value="0" />
+    </group_state>
+
+
+    <!-- Define tool0 as the end effector so RViz interactive markers work -->
+    <!-- <end_effector name="tool0" parent_link="tool0" group="ur_manipulator" parent_group="ur_manipulator"/> -->
 
     <disable_collisions link1="wrist_3_link" link2="gripper_adapter" reason="Adjacent" />
     <disable_collisions link1="gripper_adapter" link2="gripper_body" reason="Adjacent" />
