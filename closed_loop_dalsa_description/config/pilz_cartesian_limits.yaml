@@ -1,0 +1,6 @@
+# Cartesian limits for Pilz Industrial Motion Planner
+cartesian_limits:
+  max_trans_vel: 0.25    # m/s (Safely slow for liquid handling)
+  max_trans_acc: 1.0     # m/s^2
+  max_trans_dec: 1.0     # m/s^2
+  max_rot_vel: 1.57      # rad/s (Approx 90 deg/s)

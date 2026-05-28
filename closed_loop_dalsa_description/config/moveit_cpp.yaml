@@ -1,0 +1,22 @@
+planning_scene_monitor_options:
+  name: "planning_scene_monitor"
+  robot_description: "robot_description"
+  joint_state_topic: "/joint_states"
+  attached_collision_object_topic: "/attached_collision_object"
+  publish_planning_scene_topic: "/monitored_planning_scene"
+  monitored_planning_scene_topic: "/monitored_planning_scene"
+  wait_for_initial_state_timeout: 10.0
+  default_robot_padding: 0.0
+  default_robot_scale: 1.0
+  default_object_padding: 0.0
+
+planning_pipelines:
+  pipeline_names:
+    - ompl
+
+plan_request_params:
+  planning_attempts: 20
+  planning_time: 10.0
+  max_velocity_scaling_factor: 0.2  # Keep it slow for liquid handling
+  max_acceleration_scaling_factor: 0.2
+  planning_pipeline: ompl  # Explicitly set the default

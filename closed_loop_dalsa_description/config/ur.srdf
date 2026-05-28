@@ -18,7 +18,7 @@
         <link name="gripper_adapter" />
         <link name="gripper_body" />
         <link name="finger1" />
-        <!-- <link name="finger2" /> -->
+        <link name="finger2" />
         <joint name="finger_joint" />
     </group>
 

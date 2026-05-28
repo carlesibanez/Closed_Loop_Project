@@ -50,6 +50,7 @@ def generate_launch_description():
             get_package_share_directory("closed_loop_dalsa_description"), "config", "kinematics.yaml"))
         .joint_limits(file_path=os.path.join(
             get_package_share_directory("closed_loop_dalsa_description"), "config", "joint_limits.yaml"))
+        .moveit_cpp(file_path=get_package_share_directory("closed_loop_dalsa_description")+ "/config/moveit_cpp.yaml")
         .planning_pipelines(pipelines=["ompl"], default_planning_pipeline="ompl")
         .to_moveit_configs()
     )

@@ -26,4 +26,10 @@ install(DIRECTORY launch
   DESTINATION share/${PROJECT_NAME}
 )
 
+install(PROGRAMS
+  scripts/test.py
+  scripts/test_panda.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 ament_package()

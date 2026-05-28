@@ -42,7 +42,6 @@ def generate_launch_description():
     )
 
     # 3. Include the UR Simulation 
-    # This launch file handles Gazebo, ros2_control, MoveGroup, and robot_state_publisher
     # DO NOT spawn additional ros2_control_node or joint_state_broadcaster here as ur_sim_control already does
     ur_simulation = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -60,6 +59,22 @@ def generate_launch_description():
         }.items()
     )
 
+    # 4. Launch our custom MoveGroup configuration
+    # moveit_config_launch = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource(moveit_launch_file),
+    #     launch_arguments={
+    #         'ur_type': 'ur5e',
+    #         'use_sim_time': 'True',
+    #     }.items()
+    # )
+
+    gripper_spawner = Node(
+        package='controller_manager',
+        executable='spawner',
+        # This name MUST match the name inside your ros2_controllers.yaml
+        arguments=["gripper_controller", "--controller-manager", "/controller_manager"]
+    )
+
     camera_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
@@ -73,7 +88,24 @@ def generate_launch_description():
         output='screen'
     )
 
+    microplate_urdf_path = os.path.join(pkg_description, 'urdf', 'microplate.urdf')
+    spawn_microplate = Node(
+        package='ros_gz_sim',
+        executable='create',
+        arguments=[
+            '-name', 'sbs_microplate',
+            '-file', microplate_urdf_path,
+            '-x', '0.35',  # X position in front of the robot
+            '-y', '0.0',   # Centered
+            '-z', '0.76',  # Slightly above the table to let physics drop it
+        ],
+        output='screen',
+    )
+
     return LaunchDescription([
         ur_simulation,
+        # moveit_config_launch,
+        gripper_spawner,
+        spawn_microplate,
         camera_bridge,
     ])
