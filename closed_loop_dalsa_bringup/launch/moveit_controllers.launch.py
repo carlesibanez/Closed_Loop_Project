@@ -20,7 +20,7 @@ def load_yaml(package_name, file_path):
     try:
         with open(absolute_file_path) as file:
             return yaml.safe_load(file)
-    except OSError:  # parent of IOError, OSError *and* WindowsError where available
+    except OSError:  
         return None
 
 def generate_launch_description():
@@ -133,11 +133,6 @@ def generate_launch_description():
 
     servo_yaml = load_yaml("closed_loop_dalsa_description", "config/servo.yaml")
     servo_params = {"moveit_servo": servo_yaml}
-    # servo_params = {
-    #     "moveit_servo": ParameterBuilder("closed_loop_dalsa_description")
-    #     .yaml("config/servo.yaml")
-    #     .to_dict()
-    # }
 
 
     servo_node = Node(
@@ -159,7 +154,7 @@ def generate_launch_description():
             DeclareLaunchArgument("ur_type", default_value="ur5e"),
             DeclareLaunchArgument("use_sim_time", default_value="true"),
             move_group_node,
-            rviz_node,  # Add RViz back
+            rviz_node,
             servo_node,
         ]
     )
