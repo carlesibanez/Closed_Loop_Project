@@ -46,7 +46,7 @@
     <origin xyz="0 0 0.751" rpy="0 0 0" />          
   </xacro:ur_robot>
 
-  <xacro:robotiq_hande_gripper parent="tool0">
+  <xacro:robotiq_hande_gripper parent="tool0" sim_gazebo="true">
     <origin xyz="0 0 0" rpy="0 0 ${pi}"/>
   </xacro:robotiq_hande_gripper>
 

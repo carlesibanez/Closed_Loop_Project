@@ -11,7 +11,7 @@ def generate_launch_description():
     # 1. Get paths using share directory (symlinked to your src)
     pkg_description = get_package_share_directory('closed_loop_dalsa_description')
     pkg_bringup = get_package_share_directory('closed_loop_dalsa_bringup')
-    # pkg_robotiq = get_package_share_directory('robotiq_hande_description')
+    pkg_robotiq = get_package_share_directory('robotiq_hande_description')
     
     # Robot XACRO and world paths
     urdf_path = os.path.join(pkg_description, 'urdf', 'lab_setup2.urdf.xacro')
@@ -21,9 +21,9 @@ def generate_launch_description():
     # 2. Gazebo Resource Path (Vital for finding your .stl meshes)
     # We point Gazebo to the 'share' directory so it can resolve package:// paths
     model_path = os.path.dirname(pkg_description)
-    # robotiq_path = os.path.dirname(pkg_robotiq)
+    robotiq_path = os.path.dirname(pkg_robotiq)
 
-    resource_paths = [model_path] #, robotiq_path]
+    resource_paths = [model_path, robotiq_path]
     if 'GZ_SIM_RESOURCE_PATH' in os.environ:
         os.environ['GZ_SIM_RESOURCE_PATH'] += ":" + ":".join(resource_paths)
     else:
@@ -59,15 +59,6 @@ def generate_launch_description():
         }.items()
     )
 
-    # 4. Launch our custom MoveGroup configuration
-    # moveit_config_launch = IncludeLaunchDescription(
-    #     PythonLaunchDescriptionSource(moveit_launch_file),
-    #     launch_arguments={
-    #         'ur_type': 'ur5e',
-    #         'use_sim_time': 'True',
-    #     }.items()
-    # )
-
     gripper_spawner = Node(
         package='controller_manager',
         executable='spawner',
@@ -79,12 +70,18 @@ def generate_launch_description():
         package='ros_gz_bridge',
         executable='parameter_bridge',
         arguments=[
-            '/wrist_camera/image@sensor_msgs/msg/Image[gz.msgs.Image',
             '/wrist_camera/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked',
             '/wrist_camera/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo',
             '/attach_plate@std_msgs/msg/Empty]gz.msgs.Empty',
             '/detach_plate@std_msgs/msg/Empty]gz.msgs.Empty'
         ],
+        output='screen'
+    )
+
+    image_bridge = Node(
+        package='ros_gz_image',
+        executable='image_bridge',
+        arguments=['/wrist_camera/image', '/wrist_camera/depth_image'],
         output='screen'
     )
 
@@ -104,8 +101,8 @@ def generate_launch_description():
 
     return LaunchDescription([
         ur_simulation,
-        # moveit_config_launch,
         gripper_spawner,
         spawn_microplate,
         camera_bridge,
+        image_bridge,
     ])

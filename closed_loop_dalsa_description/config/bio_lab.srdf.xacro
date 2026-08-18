@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro" name="bio_lab">
     
-
     <xacro:include filename="$(find ur_moveit_config)/srdf/ur_macro.srdf.xacro"/>
 
     <xacro:ur_srdf/>
@@ -11,14 +10,14 @@
     </group>
 
     <group name="gripper">
-        <link name="gripper_adapter" />
         <link name="gripper_body" />
-        <link name="finger1" />
-        <!-- <link name="finger2" /> -->
+        <link name="left_fingerbase" />
+        <link name="right_fingerbase" />
         <joint name="finger_joint" />
+        <joint name="finger2_joint" />
     </group>
 
-    <end_effector name="hand_e" parent_link="tool0" group="gripper" parent_group="ur_manipulator_tcp" />
+    <end_effector name="hand_e" parent_link="tcp_link" group="gripper" parent_group="ur_manipulator_tcp" />
 
     <group_state name="closed" group="gripper">
         <joint name="finger_joint" value="0.025"/>
@@ -43,31 +42,32 @@
       <joint name="finger_joint" value="0"/>
     </group_state>
 
-    <disable_collisions link1="wrist_3_link" link2="gripper_adapter" reason="Adjacent" />
-    <disable_collisions link1="gripper_adapter" link2="gripper_body" reason="Adjacent" />
-    <disable_collisions link1="gripper_body" link2="finger1" reason="Adjacent" />
-    <disable_collisions link1="gripper_body" link2="finger2" reason="Adjacent" />
-    <disable_collisions link1="wrist_3_link" link2="gripper_body" reason="Never" />
+    <!-- Gripper disables -->
+    <disable_collisions link1="wrist_3_link" link2="gripper_body" reason="Adjacent" />
+    <disable_collisions link1="tool0" link2="gripper_body" reason="Adjacent" />
+    <disable_collisions link1="gripper_body" link2="left_fingerbase" reason="Adjacent" />
+    <disable_collisions link1="gripper_body" link2="right_fingerbase" reason="Adjacent" />
+    <disable_collisions link1="left_fingerbase" link2="right_fingerbase" reason="Never" />
+    <disable_collisions link1="wrist_3_link" link2="left_fingerbase" reason="Never" />
+    <disable_collisions link1="wrist_3_link" link2="right_fingerbase" reason="Never" />
 
+    <!-- Camera disables -->
     <disable_collisions link1="gripper_body" link2="camera_mount" reason="Adjacent" />
     <disable_collisions link1="camera_mount" link2="camera_link" reason="Adjacent" />
-
-    <disable_collisions link1="camera_mount" link2="finger1" reason="Never" />
-    <disable_collisions link1="camera_mount" link2="finger2" reason="Never" />
+    <disable_collisions link1="camera_mount" link2="left_fingerbase" reason="Never" />
+    <disable_collisions link1="camera_mount" link2="right_fingerbase" reason="Never" />
     <disable_collisions link1="camera_link" link2="gripper_body" reason="Never" />
+    <disable_collisions link1="camera_link" link2="left_fingerbase" reason="Never" />
+    <disable_collisions link1="camera_link" link2="right_fingerbase" reason="Never" />
+    <disable_collisions link1="wrist_3_link" link2="camera_mount" reason="Never" />
+    <disable_collisions link1="wrist_3_link" link2="camera_link" reason="Never" />
 
+    <!-- Table & Base Disables -->
     <disable_collisions link1="base_link_inertia" link2="lab_table" reason="Adjacent"/>
     <disable_collisions link1="shoulder_link" link2="lab_table" reason="Never"/>
     <disable_collisions link1="base_link" link2="lab_table" reason="Adjacent"/>
     <disable_collisions link1="upper_arm_link" link2="lab_table" reason="Never" />
     <disable_collisions link1="forearm_link" link2="lab_table" reason="Never" />
-    <disable_collisions link1="tool0" link2="gripper_adapter" reason="Adjacent" />
-
-    <disable_collisions link1="finger1" link2="finger2" reason="Never" />
-
-    <disable_collisions link1="gripper_adapter" link2="finger1" reason="Never" />
-    <disable_collisions link1="gripper_adapter" link2="finger2" reason="Never" />
-
     <disable_collisions link1="wrist_1_link" link2="lab_table" reason="Never" />
     <disable_collisions link1="wrist_2_link" link2="lab_table" reason="Never" />
 </robot>
